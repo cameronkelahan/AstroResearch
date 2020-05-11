@@ -1,0 +1,3 @@
+Best K-Value = 15
+Best Weighted Test Accuracy = 0.750
+Best Weighted Test F1 Score = 0.741
