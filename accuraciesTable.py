@@ -1,5 +1,8 @@
 import plotly.graph_objects as go
 
+# This was a first attempt at creating a table to display the accuracies of different models
+# Opens the table with html
+
 headerColor = 'grey'
 rowEvenColor = 'lightgrey'
 rowOddColor = 'white'

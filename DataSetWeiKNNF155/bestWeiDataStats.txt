@@ -1,0 +1,5 @@
+Best K-Value = 9
+Best Unweighted Training Accuracy = 1.000
+Best Unweighted Training F1 Score = 1.000
+Best Weighted Test Accuracy = 0.536
+Best Weighted Test F1 Score = 0.552

@@ -1,0 +1,4 @@
+Best NN Training Accuracy = 0.926
+Best NN Training F1 Score = 0.933
+Best Unweighted Test Accuracy = 0.679
+Best Unweighted Test F1 Score = 0.667

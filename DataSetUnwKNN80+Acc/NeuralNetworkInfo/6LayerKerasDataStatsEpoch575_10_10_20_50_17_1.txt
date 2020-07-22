@@ -1,0 +1,12 @@
+Number of Layers = 6
+Layer1 = 10 Nodes ReLU
+Layer2 = 10 Nodes ReLU
+Layer3 = 20 Nodes ReLU
+Layer4 = 50 Node ReLU
+
+    Layer7 = 17 Nodes ReLU
+Layer10 = 1 Node Sigmoid
+Best Keras Training Accuracy = 0.840
+Best Keras Training F1 Score = 0.835
+Best Keras Test Accuracy = 0.929
+Best Keras Test F1 Score = 0.933

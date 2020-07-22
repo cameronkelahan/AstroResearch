@@ -1,0 +1,13 @@
+arrayOfDatasetsREADME:
+X[0] is all of the X datasets; (1000, 81, 2) shape
+X[1] is all of the classifications for each X set; (1000, 81, 1) shape
+X[2] is all validation X datasets
+X[3] is all Validation classifications for each X validation set
+
+Test Accuracy = 0.821
+Test F1 Score = 0.815
+
+Model layer Description:
+Layer 1: ReLU; 5 nodes
+Layer 2: ReLU; 4 nodes
+Layer 3: Sigmoid; 1 node

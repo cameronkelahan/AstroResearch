@@ -12,16 +12,16 @@ from sklearn import metrics
 
 ############################################ Read In Data From File ####################################################
 # Read in column 0 from Table1 for the name of the galaxy
-galaxyName = genfromtxt(sys.argv[1], delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=0)
+galaxyName = genfromtxt('Paper2Table1.csv', delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=0)
 
 # Read in Column 6 from Table1 (Maser Classification)
-maserType = genfromtxt(sys.argv[1], delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=6)
+maserType = genfromtxt('Paper2Table1.csv', delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=6)
 
 # Read in L12 from Table1
-L12 = genfromtxt(sys.argv[1], delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=7)
+L12 = genfromtxt('Paper2Table1.csv', delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=7)
 
 # Read in Lobs from Table2
-Lobs = genfromtxt(sys.argv[2], delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=4)
+Lobs = genfromtxt('Paper2Table2.csv', delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=4)
 
 ########################################## Normalize the Data ##########################################################
 # Normalize L12
@@ -96,9 +96,16 @@ dataRange = range(0, upperBound)
 ######################################## Outer Loop: Choosing Random Data ##############################################
 # Chooses random data numOfIterations times to perform KNN analysis and Stratified Validation
 
-kAverages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # Used to graph accuracy of each k value; k = 1-15
-f1Averages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # Used to graph f1 score of each k value; k = 1-15
-numOfIterations = 1000
+# kAverages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+# # Used to graph accuracy of each k value; k = 1-15
+# f1Averages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+# # Used to graph f1 score of each k value; k = 1-15
+
+kAverages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+# Used to graph accuracy of each k value; k = 1-30
+f1Averages = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+# Used to graph f1 score of each k value; k = 1-30
+numOfIterations = 10000
 print("Number of Iterations This Run = ", numOfIterations)
 dataIterations = range(0, numOfIterations)
 
@@ -112,7 +119,6 @@ bestTestSetX = []
 bestTestSetY = []
 bestKVal = 0
 
-# plt.subplot(2, 1, 1)
 for num in dataIterations:
     if (num % (numOfIterations/10)) == 0:
         print("Iteration Number ", num)
@@ -186,17 +192,8 @@ for num in dataIterations:
                 valMaserListY.append(X_val[count][1])
         count += 1
 
-    # Plot the masers and nonmasers from the training and validation sets and distinguish them as unique symbols
-    # plt.scatter(trainMaserListX, trainMaserListY, c='orange', marker='s')
-    # plt.scatter(trainNonMaserListX, trainNonMaserListY, c='cyan', marker = '^')
-    # plt.scatter(valMaserListX, valMaserListY, c='purple', marker='s')
-    # plt.scatter(valNonMaserListX, valNonMaserListY, c='green', marker='^')
-    # plt.legend()
-    # plt.savefig("MappingOfDataTest")
-    # plt.show()
-
-    kRange = range(2, 16) # Used to test K=2 -> k=15
-    kScores = [] # Usesd to keep track of the accuracy scores of k
+    kRange = range(1, 31) # Used to test K=2 -> k=15
+    kScores = [] # Used to keep track of the accuracy scores of k
     countK = 0
     for k in kRange:
         # Create the KNN Classifier
@@ -244,39 +241,27 @@ y_pred = model.fit(bestTrainSetX, bestTrainSetY).predict(bestTestSetX)
 testAcc = metrics.accuracy_score(bestTestSetY, y_pred)
 testF1 = metrics.f1_score(bestTestSetY, y_pred)
 
-# # Rebuild the model by loading in the data from file
-# bestTrainSetX2 = np.load('DataTrainingXKNNUnweighted.npy')
-# bestTrainSetY2 = np.load('DataTrainingYKNNUnweighted.npy')
-# bestTestSetX2 = np.load('DataTestXKNNUnweighted.npy')
-# bestTestSetY2 = np.load('DataTestYKNNUnweighted.npy')
-# model = KNeighborsClassifier(n_neighbors=3, metric='euclidian')
-# y_pred2 = model.fit(bestTrainSetX2, bestTrainSetY2).predict(bestTestSetX2)
-# testF12 = metrics.f1_score(bestTestSetY2, y_pred2)
+# f = open('bestUnwDataStats.txt', 'w')
+# f.write("Best K-Value = %i\n" % bestKVal)
+# f.write("Best Unweighted Training Accuracy = %.3f\n" % bestKAcc)
+# f.write("Best Unweighted Training F1 Score = %.3f\n" % bestF1Score)
+# f.write("Best Unweighted Test Accuracy = %.3f\n" % testAcc)
+# f.write("Best Unweighted Test F1 Score = %.3f" % testF1)
+# # f.write("Number of Iterations of Undersampled NonMaser Datasets = " % numOfIterations)
+# f.close()
 
-# unwTestF1Scores = []
-# for kval in kRange:
-#     model = KNeighborsClassifier(n_neighbors=kval, metric='euclidian')
-#     forLoopUnwY_pred = model.fit(bestTrainSetX, bestTrainSetY).predict(bestTestSetX)
-#     forLoopUnwTestF1 = metrics.d1_score(bestTestSetY, forLoopUnwY_pred)
-#     unwTestF1Scores.append(forLoopUnwTestF1)
+# Rebuild the model with the most accurate training set and k value found from above
+weightedModel = KNeighborsClassifier(n_neighbors=bestKVal, metric='euclidean', weights='distance')
+wei_y_pred = weightedModel.fit(bestTrainSetX, bestTrainSetY).predict(bestTestSetX)
+wei_testAcc = metrics.accuracy_score(bestTestSetY, wei_y_pred)
+wei_testF1 = metrics.f1_score(bestTestSetY, wei_y_pred)
 
-# strBestKValue = 'Best K-Value = ', bestKVal
-# strBestUnwTrainF1 = ' Best Unweighted Training F1 Score = {} '.format(round(bestF1Score, 3))
-# strBestUnwTestF1 = 'Unweighted Test F1 Score = {}'.format(round(testF1, 3))
-f = open('bestUnwDataStats.txt', 'w')
-f.write("Best K-Value = %i\n" % bestKVal)
-f.write("Best Unweighted Accuracy = %.3f\n" % bestKAcc)
-f.write("Best Unweighted Training F1 Score = %.3f\n" % bestF1Score)
-f.write("Best Unweighted Test Accuracy = %.3f\n" % testAcc)
-f.write("Best Unweighted Test F1 Score = %.3f" % testF1)
-f.close()
-# text_file = open("bestUnwDataStats.txt", "w")
-# n = text_file.write('Best K-Value = ', bestKVal)
-# m = text_file.write(strBestUnwTrainF1)
-# l = text_file.write(strBestUnwTestF1)
-# text_file.close()
-# bestDataUnweightedArray = np.array([strBestKValue, strBestUnwTrainF1, strBestUnwTestF1])
-# print(bestDataUnweightedArray)
+# f = open('bestWeiDataStats.txt', 'w')
+# f.write("Best K-Value = %i\n" % bestKVal)
+# f.write("Best Weighted Test Accuracy = %.3f\n" % wei_testAcc)
+# f.write("Best Weighted Test F1 Score = %.3f" % wei_testF1)
+# # f.write("Number of Iterations of Undersampled NonMaser Datasets = " % numOfIterations)
+# f.close()
 
 # Constant names for the long string names of the saved .npy files
 xUnwDataTrain = 'DataTrainingXKNNUnweighted'
@@ -288,12 +273,12 @@ yUnwDataTest = 'DataTestYKNNUnweighted'
 bestUnwDataStats = 'BestUnwDataSetStats'
 bestWeightDataStats = 'BestWeiDataSetStats'
 
-np.save(xUnwDataTrain, bestTrainSetX)
-np.save(yUnwDataTrain, bestTrainSetY)
-np.save(xUnwDataVal, X_val)
-np.save(yUnwDataVal, y_val)
-np.save(xUnwDataTest, bestTestSetX)
-np.save(yUnwDataTest, bestTestSetY)
+# np.save(xUnwDataTrain, bestTrainSetX)
+# np.save(yUnwDataTrain, bestTrainSetY)
+# np.save(xUnwDataVal, X_val)
+# np.save(yUnwDataVal, y_val)
+# np.save(xUnwDataTest, bestTestSetX)
+# np.save(yUnwDataTest, bestTestSetY)
 
 print("Number of Iterations = ", numOfIterations)
 print("Best K Val = ", bestKVal)
@@ -304,69 +289,37 @@ print("Test F1 Score = ", testF1)
 
 # Text to be used in the Heat Map
 t = "BestKVal = {}\nBest Training F1 = {}\nTest F1 Score = {}".format(bestKVal, round(bestF1Score, 3), round(testF1, 3))
+plt.figure(figsize=(6.4, 4.8))
 
-k = 0
+curk = 0
 texts = []
 for slot in kAverages:
-    kAverages[k] = kAverages[k]/numOfIterations
-    f1Averages[k] = f1Averages[k]/numOfIterations
-    kAverages[k] = round(kAverages[k], 3)
-    f1Averages[k] = round(f1Averages[k], 3)
-    if k == bestKVal:
-        texts.append(plt.text(k, kAverages[k], kAverages[k]))
-    k += 1
+    kAverages[curk] = kAverages[curk]/numOfIterations
+    f1Averages[curk] = f1Averages[curk]/numOfIterations
+    kAverages[curk] = round(kAverages[curk], 3)
+    f1Averages[curk] = round(f1Averages[curk], 3)
+    if curk == bestKVal - 1:
+        texts.append(plt.text(curk, f1Averages[curk], f1Averages[curk]))
+    curk += 1
 print("kAverageAccuracy Per K Value:")
 print(kAverages)
 print("F1AverageScore Per K Value:")
 print(f1Averages)
 
 ########################### Plot the average unweighted f1 score of each k value #####################################
-plt.figure(figsize=(6.4, 4.8))
-plt.plot(kRange, kAverages, label = 'Average Accuracy')
-plt.plot(kRange, f1Averages, label = 'Average F1')
+plt.plot(kRange, kAverages, label='Average Accuracy')
+plt.plot(kRange, f1Averages, label='Average F1')
 plt.xlabel("Value of K")
 plt.ylabel("Accuracy of KNN Model")
 plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
-plt.title("Average Accuracy and F1 Score of KNN For Each K, Over 10,000 Random Data Series")
 plt.legend()
-plt.savefig("KNNAccUnwStrat1000.pdf", dpi=400, bbox_inches='tight', pad_inches=0.05)
+# plt.savefig("KNNAccF1UnwStrat.pdf", dpi=400, bbox_inches='tight', pad_inches=0.05)
 plt.show()
 plt.clf()
 plt.close()
 
-######################### Plot a heat map of Accuracy of Predicting Maser Values at Given Points #######################
-# Plot the test values
-# plt.subplot(2, 1, 1)
-
-bestMaserListX= []
-bestMaserListY = []
-bestNonMaserListX = []
-bestNonMaserListY = []
-
-# # Values used to make scatter plot
-# # Currently Using training set... Should it be the test set? Or validation set?
-# # Purpose of scatter plot is...
-# count = 0
-# for value in bestTrainSetY:
-#     if value == 0:
-#         for val in bestTrainSetX[count]:
-#                 bestNonMaserListX.append(bestTrainSetX[count][0])
-#                 bestNonMaserListY.append((bestTrainSetX[count][1]))
-#     else:
-#         for val in bestTrainSetX[count]:
-#                 bestMaserListX.append(bestTrainSetX[count][0])
-#                 bestMaserListY.append((bestTrainSetX[count][1]))
-#     count += 1
-#
-# plt.figure(figsize=(6.4, 4.8))
-# plt.scatter(bestMaserListX, bestMaserListY, c='orange', marker='s', label='maser')
-# plt.scatter(bestNonMaserListX, bestNonMaserListY, c='cyan', marker = '^', label='nonMaser')
-# plt.legend()
-# plt.show()
-# plt.savefig('1000IterUnweightedScatterPlot.pdf', dpi=400, bbox_inches='tight', pad_inches=0.05)
-# plt.clf()
-# plt.close()
+######################### Plot a Scaatterplot of all Maser and NonMasers in the chosen dataset #########################
 
 # Create a scatter plot of all galaxies in the data set, showing masers and non masers as unique shapes/colors
 maserL12 = []
@@ -390,214 +343,12 @@ print('Length of NonMaserLobs = ', len(nonMaserLobs))
 plt.figure(figsize=(6.4, 4.8))
 plt.scatter(maserL12, maserLobs, c='orange', marker='s', label='maser')
 plt.scatter(nonMaserL12, nonMaserLobs, c='cyan', marker='^', label='nonMaser', alpha=.2)
-plt.xlabel('L12',fontsize=16)
-plt.ylabel('Lx',fontsize=16)
+plt.xlabel('Normalized $L_{12}$', fontsize=16)
+plt.ylabel('Normalized $L_X$', fontsize=16)
 plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
 plt.legend()
-plt.savefig('AllDataScatterPlot.pdf', dpi=400, bbox_inches='tight', pad_inches=0.05)
+# plt.savefig('AllDataScatterPlot.pdf', dpi=400, bbox_inches='tight', pad_inches=0.05)
 plt.show()
 plt.clf()
 plt.close()
-
-######################## Heat Map Creation Now Done in UnwAndWeiKNNFromFile ############################################
-
-# Create the x and y axis values (0 - 1 stepping by .1)
-# xAxis = np.linspace(0, 1, num=11)
-# yAxis = np.linspace(0, 1, num=11)
-
-# # Create the x and y axis values (0 - 1 stepping by .01)
-# xAxis = np.linspace(0, 1, num=101)
-# yAxis = np.linspace(0, 1, num=101)
-#
-# # The X data set to populate and predict probability
-# predX = []
-# for x in xAxis:
-#     for y in yAxis:
-#         predX.append([x, y])
-#
-# model = KNeighborsClassifier(n_neighbors=bestKVal, metric='euclidean')
-# model.fit(bestTrainSetX, bestTrainSetY)
-# predProb = model.predict_proba(predX)
-# predMaser = predProb[:,1]
-# predMaser = predMaser.reshape(101, 101)
-# predMaser = predMaser.transpose()
-#
-# # Plot the heat map for the Unweighted KNN model
-# plt.figure(figsize=(6.4, 4.8))
-# plt.imshow(predMaser, origin='lower', extent=[0,1,0,1])
-# plt.xticks(np.arange(.2, 1.1, step=0.2))  # Set label locations
-# cbar = plt.colorbar()
-# cbar.ax.tick_params(labelsize=16)
-# cbar.set_label('Unweighted Predicted Prob of Maser', fontsize=16)
-# cbar.set_clim(0,1)
-# plt.xlabel('L12',fontsize=16)
-# plt.ylabel('Lx',fontsize=16)
-# plt.xticks(fontsize=16)
-# plt.yticks(fontsize=16)
-# # save as a PDF
-# plt.savefig('1000IterUnweightedProbMap100x100SameDataset.pdf', dpi=400, bbox_inches='tight', pad_inches=0.05)
-# plt.show()
-# plt.clf()
-# plt.close()
-
-
-
-############################# Below Here is plot to created Unweighted KNN Map after loading .npy files
-
-
-
-############################# TEMP Below here is plot to create Weighted KNN MAP after loading .npy files ##############
-bestTrainSetX1 = np.load('DataTrainingXKNNUnweighted.npy')
-bestTrainSetY1 = np.load('DataTrainingYKNNUnweighted.npy')
-bestTestSetX1 = np.load('DataTestXKNNUnweighted.npy')
-bestTestSetY1 = np.load('DataTestYKNNUnweighted.npy')
-
-# Rebuild the model with the most accurate training set and k value found from above, using distance as a weight
-model = KNeighborsClassifier(n_neighbors=bestKVal, metric='euclidean', weights='distance')
-y_pred = model.fit(bestTrainSetX1, bestTrainSetY1).predict(bestTestSetX1)
-testAcc1 = metrics.accuracy_score(bestTestSetY1, y_pred)
-testF11 = metrics.f1_score(bestTestSetY1, y_pred)
-
-# weightedTestF1Scores = []
-# for kval in kRange:
-#     model = KNeighborsClassifier(n_neighbors=kval, metric='euclidean', weights='distance')
-#     forLoopWeiY_pred = model.fit(bestTrainSetX1, bestTrainSetY1).predict(bestTestSetX1)
-#     forLoopUnwTestF11 = metrics.d1_score(bestTestSetY1, forLoopWeiY_pred)
-#     weightedTestF1Scores.append(forLoopUnwTestF11)
-
-# strBestKValue = 'Best K-Value = ', bestKVal
-# strBestWeiTestF1 = ' Weighted Test F1 Score = {}'.format(round(testF11, 3))
-f = open('bestWeightDataStats.txt', 'w')
-f.write("Best K-Value = %i\n" % (bestKVal))
-f.write("Best Weighted Test Accuracy = %.3f\n" % testAcc1)
-f.write("Best Weighted Test F1 Score = %.3f" % testF11)
-f.close()
-# text_file = open("bestWeightDataStats.txt", "w")
-# n = text_file.write(strBestKValue)
-# m = text_file.write(strBestWeiTestF1)
-# text_file.close()
-# bestDataWeightedArray = np.array([strBestKValue, strBestWeiTestF1])
-# print(bestDataWeightedArray)
-# np.savetxt(bestWeightDataStats, bestDataWeightedArray)
-
-print("Number of Iterations = ", numOfIterations)
-print("Best K Val = ", bestKVal)
-# print("Best Training Accuracy = ", bestKAcc)
-# print("Best Training F1 Score = ", bestF1Score)
-print("Test Accuracy1 = ", testAcc1)
-print("Test F1 Score1 = ", testF11)
-
-# Text to be used in the Heat Map
-t = "BestKVal = {}\nTest F1 Score = {}".format(bestKVal, round(testF11, 3))
-
-# k = 0
-# # texts = []
-# for slot in kAverages:
-#     kAverages[k] = kAverages[k]/numOfIterations
-#     f1Averages[k] = f1Averages[k]/numOfIterations
-#     kAverages[k] = round(kAverages[k], 3)
-#     f1Averages[k] = round(f1Averages[k], 3)
-#     # if k == 6:
-#     #     texts.append(plt.text(k, kAverages[k], kAverages[k]))
-#     k += 1
-# print("kAverageAccuracy Per K Value:")
-# print(kAverages)
-# print("F1AverageScore Per K Value:")
-# print(f1Averages)
-
-########################### Plot the unweighted and weighted f1 scores of each k value #################################
-# plt.figure(figsize=(6.4, 4.8))
-# plt.plot(kRange, unwTestF1Scores, label = 'Unweighted F1 Test Scores Per K Value')
-# plt.plot(kRange, weightedTestF1Scores, label = 'Weighted F1 Test Scores Per K Value')
-# plt.xlabel("Value of K")
-# plt.ylabel("F1 Score of KNN Model")
-# plt.xticks(fontsize=16)
-# plt.yticks(fontsize=16)
-# plt.title("Comparison Of F1 Scores Between Weighted and Unweighted Models for Values of K: 2-15")
-# plt.legend()
-# plt.savefig("UnwAndWeiTestF1ScoreValuesEveryK.pdf", dpi=400, bbox_inches='tight', pad_inches=0.05)
-# plt.show()
-# plt.clf()
-# plt.close()
-
-######################### Plot a heat map of Accuracy of Predicting Maser Values at Given Points #######################
-# Plot the test values
-# plt.subplot(2, 1, 1)
-
-# bestMaserListX1 = []
-# bestMaserListY1 = []
-# bestNonMaserListX1 = []
-# bestNonMaserListY1 = []
-#
-# count = 0
-# for value in bestTrainSetY1:
-#     if value == 0:
-#         for val in bestTrainSetX1[count]:
-#                 bestNonMaserListX1.append(bestTrainSetX1[count][0])
-#                 bestNonMaserListY1.append((bestTrainSetX1[count][1]))
-#     else:
-#         for val in bestTrainSetX1[count]:
-#                 bestMaserListX1.append(bestTrainSetX1[count][0])
-#                 bestMaserListY1.append((bestTrainSetX1[count][1]))
-#     count += 1
-
-# #Scatterplot of Training Set used
-# plt.figure(figsize=(6.4, 4.8))
-# plt.scatter(bestMaserListX1, bestMaserListY1, c='orange', marker='s', label='maser')
-# plt.scatter(bestNonMaserListX1, bestNonMaserListY1, c='cyan', marker = '^', label='nonMaser')
-# plt.legend()
-# plt.show()
-# #plt.savefig('1000IterWeightedScatterPlot.pdf', dpi=400, bbox_inches='tight', pad_inches=0.05)
-# plt.clf()
-# plt.close()
-
-################################ Weighted Heat Map Creation moved to UnwAndWaiKNNFromFile ##############################
-
-# Create the x and y axis values (0 - 1 stepping by .1)
-# xAxis = np.linspace(0, 1, num=11)
-# yAxis = np.linspace(0, 1, num=11)
-
-# # Create the x and y axis values (0 - 1 stepping by .01)
-# xAxis = np.linspace(0, 1, num=101)
-# yAxis = np.linspace(0, 1, num=101)
-#
-# # The X data set to populate and predict probability
-# predX = []
-# for x in xAxis:
-#     for y in yAxis:
-#         predX.append([x, y])
-#
-# model = KNeighborsClassifier(n_neighbors=bestKVal, metric='euclidean', weights='distance')
-# model.fit(bestTrainSetX1, bestTrainSetY1)
-# predProb = model.predict_proba(predX)
-# predMaser = predProb[:,1]
-# # print("One Dimension: ", predMaser)
-# # predMaser = predMaser.reshape(11, 11)
-# predMaser = predMaser.reshape(101, 101)
-# predMaser = predMaser.transpose()
-# # print("After reshape to 2d: ", predMaser)
-# # print(type(predMaser))
-# # print(predMaser.shape)
-# # print("Predicted probabilites = ", predProb)
-# # print("length of predProb = ", len(predProb))
-# # predMaser = np.flip(predMaser, 1)
-# # print("After flip: ", predMaser)
-#
-# plt.figure(figsize=(6.4, 4.8))
-# plt.imshow(predMaser, origin='lower', extent=[0,1,0,1])
-# plt.xticks(np.arange(.2, 1.1, step=0.2))  # Set label locations
-# cbar = plt.colorbar()
-# cbar.ax.tick_params(labelsize=16)
-# cbar.set_label('Weighted Predicted Prob of Maser', fontsize=16)
-# cbar.set_clim(0,1)
-# # plt.text(-10, 50, t, family='serif', ha='right', wrap=True)
-# plt.xlabel('L12',fontsize=16)
-# plt.ylabel('Lx',fontsize=16)
-# plt.xticks(fontsize=16)
-# plt.yticks(fontsize=16)
-# # Save as a PDF
-# plt.savefig('1000IterWeightedProbMap100x100SameDataset.pdf', dpi=400, bbox_inches='tight', pad_inches=0.05)
-# plt.show()
-# plt.clf()
-# plt.close()

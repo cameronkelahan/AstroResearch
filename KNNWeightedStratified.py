@@ -9,16 +9,16 @@ from sklearn import metrics
 
 ############################################ Read In Data From File ####################################################
 # Read in column 0 from Table1 for the name of the galaxy
-galaxyName = genfromtxt(sys.argv[1], delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=0)
+galaxyName = genfromtxt('Paper2Table1.csv', delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=0)
 
 # Read in Column 6 from Table1 (Maser Classification)
-maserType = genfromtxt(sys.argv[1], delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=6)
+maserType = genfromtxt('Paper2Table1.csv', delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=6)
 
 # Read in L12 from Table1
-L12 = genfromtxt(sys.argv[1], delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=7)
+L12 = genfromtxt('Paper2Table1.csv', delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=7)
 
 # Read in Lobs from Table2
-Lobs = genfromtxt(sys.argv[2], delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=4)
+Lobs = genfromtxt('Paper2Table2.csv', delimiter=',', skip_header=1, dtype=None, encoding="utf8", usecols=4)
 
 ########################################## Normalize the Data ##########################################################
 # Normalize L12
@@ -171,15 +171,6 @@ for num in dataIterations:
                 valMaserListY.append(X_val[count][1])
         count += 1
 
-    # Plot the masers and nonmasers from the training and validation sets and distinguish them as unique symbols
-    # plt.scatter(trainMaserListX, trainMaserListY, c='orange', marker='s')
-    # plt.scatter(trainNonMaserListX, trainNonMaserListY, c='cyan', marker = '^')
-    # plt.scatter(valMaserListX, valMaserListY, c='purple', marker='s')
-    # plt.scatter(valNonMaserListX, valNonMaserListY, c='green', marker='^')
-    # plt.legend()
-    # plt.savefig("MappingOfDataTest")
-    # plt.show()
-
     kRange = range(2, 16)  # Used to test K=2 -> k=15
     kScores = []  # Usesd to keep track of the accuracy scores of k
     countK = 0
@@ -223,7 +214,6 @@ for num in dataIterations:
         countK += 1
 
 bestTrainSetX = np.load('DataTrainingXKNNUnweighted.npy')
-print("bestTrainSetX[13] = ", bestTrainSetX[13])
 bestTrainSetY = np.load('DataTrainingYKNNUnweighted.npy')
 bestTestSetX = np.load('DataTestXKNNUnweighted.npy')
 bestTestSetY = np.load('DataTestYKNNUnweighted.npy')
@@ -265,7 +255,6 @@ print(f1Averages)
 # plt.show()
 
 ########################### Plot the average accuracy and f1 score of each k value #####################################
-# plt.subplot(2, 1, 1)
 # plt.plot(kRange, kAverages, label = 'Average Accuracy')
 # plt.plot(kRange, f1Averages, label = 'Average F1')
 # plt.savefig("BestKValue10Value")
@@ -280,7 +269,6 @@ print(f1Averages)
 
 ######################### Plot a heat map of Accuracy of Predicting Maser Values at Given Points #######################
 # Plot the test values
-plt.subplot(2, 1, 1)
 
 bestMaserListX= []
 bestMaserListY = []
@@ -302,43 +290,3 @@ for value in bestTrainSetY:
 plt.scatter(bestMaserListX, bestMaserListY, c='orange', marker='s', label='maser')
 plt.scatter(bestNonMaserListX, bestNonMaserListY, c='cyan', marker = '^', label='nonMaser')
 plt.legend()
-
-# Assign to second suplot
-# This will be the colored probability mapping the probability of finding a maser at the location on the graph
-plt.subplot(2, 1, 2)
-
-# Create the x and y axis values (0 - 1 stepping by .1)
-# xAxis = np.linspace(0, 1, num=11)
-# yAxis = np.linspace(0, 1, num=11)
-
-# Create the x and y axis values (0 - 1 stepping by .01)
-xAxis = np.linspace(0, 1, num=101)
-yAxis = np.linspace(0, 1, num=101)
-
-# The X data set to populate and predict probability
-predX = []
-for x in xAxis:
-    for y in yAxis:
-        predX.append([x, y])
-
-model = KNeighborsClassifier(n_neighbors=bestKVal, metric='euclidean', weights='distance')
-model.fit(bestTrainSetX, bestTrainSetY)
-predProb = model.predict_proba(predX)
-predMaser = predProb[:,1]
-# print("One Dimension: ", predMaser)
-# predMaser = predMaser.reshape(11, 11)
-predMaser = predMaser.reshape(101, 101)
-predMaser = predMaser.transpose()
-# print("After reshape to 2d: ", predMaser)
-# print(type(predMaser))
-# print(predMaser.shape)
-# print("Predicted probabilites = ", predProb)
-# print("length of predProb = ", len(predProb))
-# predMaser = np.flip(predMaser, 1)
-# print("After flip: ", predMaser)
-
-plt.imshow(predMaser, origin='lower')
-plt.colorbar()
-plt.text(-50, 50, t, family='serif', ha='right', wrap=True)
-plt.savefig('100IterWeightedProbMap100x100SameDataset')
-plt.show()

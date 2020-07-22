@@ -9,9 +9,11 @@ from numpy import genfromtxt
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
+# Removes truncation of arrays
+# np.set_printoptions(threshold=np.inf)
 
 kRange = range(2, 16)
-bestKValue = 3
+bestKValue = 15
 
 # Rebuild the models by loading in the data from file
 bestTrainSetX = np.load('DataTrainingXKNNUnweighted.npy')
@@ -55,7 +57,7 @@ plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
 plt.title("Comparison Of Test F1 Scores: Weighted and Unweighted Models")
 plt.legend()
-plt.savefig("UnwAndWeiTestF1ScoreValuesEveryK.pdf", dpi=400, bbox_inches='tight', pad_inches=0.05)
+# plt.savefig("UnwAndWeiTestF1ScoreValuesEveryK.pdf", dpi=400, bbox_inches='tight', pad_inches=0.05)
 plt.show()
 plt.clf()
 plt.close()
@@ -70,13 +72,20 @@ for x in xAxis:
     for y in yAxis:
         predX.append([x, y])
 
+print("Type of PredX: ", type(predX))
+
 # Create Unweighted Heat Map of Data based on the classification of fabricated galaxies
-model = KNeighborsClassifier(n_neighbors=bestKValue, metric='euclidean')
-model.fit(bestTrainSetX, bestTrainSetY)
-predProb = model.predict_proba(predX)
+modelUnw = KNeighborsClassifier(n_neighbors=bestKValue, metric='euclidean')
+modelUnw.fit(bestTrainSetX, bestTrainSetY)
+predProb = modelUnw.predict_proba(predX)
+print("PredProb: ", predProb)
+print("Type of predProb = ", type(predProb))
+print("Shape of predProb: ", predProb.shape)
 predMaser = predProb[:,1]
 predMaser = predMaser.reshape(101, 101)
 predMaser = predMaser.transpose()
+print("predMaser: ", predMaser)
+print("Type of predMaser = ", type(predMaser))
 
 plt.figure(figsize=(6.4, 4.8))
 plt.imshow(predMaser, origin='lower', extent=[0,1,0,1])
@@ -85,23 +94,25 @@ cbar = plt.colorbar()
 cbar.ax.tick_params(labelsize=16)
 cbar.set_label('Unweighted Predicted Prob of Maser', fontsize=16)
 cbar.set_clim(0,1)
-plt.xlabel('L12',fontsize=16)
-plt.ylabel('Lx',fontsize=16)
+plt.xlabel('$L_{12}$',fontsize=16)
+plt.ylabel('$L_X$',fontsize=16)
 plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
 # save as a PDF
-plt.savefig('1000IterUnweightedProbMap100x100SameDataset.pdf', dpi=400, bbox_inches='tight', pad_inches=0.05)
+#plt.savefig('1000IterUnweightedProbMap100x100SameDataset.pdf', dpi=400, bbox_inches='tight', pad_inches=0.05)
 plt.show()
 plt.clf()
 plt.close()
 
 # Create the Weighted Heat Map of Data based on the classification of fabricated galaxies
-model = KNeighborsClassifier(n_neighbors=bestKValue, metric='euclidean', weights='distance')
-model.fit(bestTrainSetX, bestTrainSetY)
-predProb = model.predict_proba(predX)
+modelWei = KNeighborsClassifier(n_neighbors=bestKValue, metric='euclidean', weights='distance')
+modelWei.fit(bestTrainSetX, bestTrainSetY)
+predProb = modelWei.predict_proba(predX)
+print(predProb)
 predMaser = predProb[:,1]
 predMaser = predMaser.reshape(101, 101)
 predMaser = predMaser.transpose()
+print(predMaser)
 
 plt.figure(figsize=(6.4, 4.8))
 plt.imshow(predMaser, origin='lower', extent=[0,1,0,1])
@@ -110,12 +121,12 @@ cbar = plt.colorbar()
 cbar.ax.tick_params(labelsize=16)
 cbar.set_label('Weighted Predicted Prob of Maser', fontsize=16)
 cbar.set_clim(0,1)
-plt.xlabel('L12',fontsize=16)
-plt.ylabel('Lx',fontsize=16)
+plt.xlabel('$L_{12}$',fontsize=16)
+plt.ylabel('$L_X$',fontsize=16)
 plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
 # Save as a PDF
-plt.savefig('1000IterWeightedProbMap100x100SameDataset.pdf', dpi=400, bbox_inches='tight', pad_inches=0.05)
+# plt.savefig('1000IterWeightedProbMap100x100SameDataset.pdf', dpi=400, bbox_inches='tight', pad_inches=0.05)
 plt.show()
 plt.clf()
 plt.close()
