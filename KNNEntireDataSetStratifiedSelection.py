@@ -7,6 +7,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import f1_score, make_scorer
 from numpy import genfromtxt
 from scipy.stats import norm
+from sklearn import metrics
 
 # List 1 and 2 here should be the nonmaser and maser list pertaining to the same parameter (i.e. L12, Lx, etc.)
 # List1name should be masers___ where ___ is the parameter (i.e. nonmasersL12) Used for the label parameter of plot
@@ -56,6 +57,50 @@ def plot(parentList, childList, parentListName, childListName, xLabel, saveName,
     plt.savefig(saveName, dpi=400, bbox_inches='tight', pad_inches=0.05)
     plt.show()
 
+    plt.close()
+
+#############################
+def heatMap(model, title, saveName):
+    ################# 3 Layer NN Heat Map
+    # Create the x and y axis values (0 - 1 stepping by .1)
+    # xAxis = np.linspace(0, 1, num=11)
+    # yAxis = np.linspace(0, 1, num=11)
+
+    # Create the x and y axis values (0 - 1 stepping by .01)
+    xAxis = np.linspace(0, 1, num=101)
+    yAxis = np.linspace(0, 1, num=101)
+
+    # The X data set to populate and predict probability
+    predX = []
+    for x in xAxis:
+        for y in yAxis:
+            predX.append([x, y])
+
+    predProb = model.predict_proba(np.array(predX))
+
+    predMaser = predProb[:, 1]
+    # predMaser = predMaser.reshape(11, 11)
+    predMaser = predMaser.reshape(101, 101)
+    predMaser = predMaser.transpose()
+
+    plt.figure(figsize=(6.4, 4.8))
+    plt.imshow(predMaser, origin='lower', extent=[0, 1, 0, 1])
+    plt.xticks(np.arange(.2, 1.1, step=0.2))  # Set label locations
+    cbar = plt.colorbar()
+    cbar.ax.tick_params(labelsize=16)
+    cbar.set_label('Predicted Prob of Maser', fontsize=16)
+    plt.clim(vmin=0, vmax=1)
+    cbar.set_clim(0, 1)
+    # plt.text(-10, 50, t, family='serif', ha='right', wrap=True)
+    plt.title(title)
+    plt.xlabel('L12', fontsize=16)
+    plt.ylabel('Lx', fontsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    # Save as a PDF
+    plt.savefig(saveName, dpi=400, bbox_inches='tight', pad_inches=0.05)
+    plt.show()
+    plt.clf()
     plt.close()
 
 
@@ -142,7 +187,7 @@ def main():
     # Number of splits is only 1, as we only want it to split into 1 training and 1 test set
     # .2 signifies 20% of the parent data set; used as the test data set
     # This splitting preserves the proportionality of masers to nonmasers from the parent data set
-    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=3)
+    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=1)
     # random_state 3 was chosen to offer the most accurate distribution among the L12 and LX attributes
 
     # Extract the chosen data value indices for the training and test data sets form the split
@@ -256,10 +301,12 @@ def main():
         # Uses 'Leave-One-Out' methodology; will split into as many sections as there is data
         # Makes only one data point at a time the test data set
         # Cannot do that; number of splits cannot be greater than the number of members in each class; stick to 5
-        f1 = cross_val_score(model, X_train, y_train, cv=5, scoring=make_scorer(f1_score),verbose=0)
+        f1 = cross_val_score(model, X_train, y_train, cv=5, scoring=make_scorer(f1_score), verbose=0)
+        # make_scorer(f1_score),
         print("F1 List: ", f1)
         f1 = mean(f1)
         print("F1 Mean: ", f1)
+        print("K = ", k)
         # Append F1 score to the f1List which keeps track of which K gets what F1 score
         f1List.append(f1)
 
@@ -269,6 +316,75 @@ def main():
 
     print("F1 List: ", f1List)
     print('Max F1: ', maxF1, " | Max K: ", maxK)
+
+    ############ Apply the test data set to the model
+    model = KNeighborsClassifier(n_neighbors=3, metric='euclidean')
+    test_pred = model.fit(X_train, y_train).predict(X_test)
+    testAcc = metrics.accuracy_score(y_test, test_pred)
+    testF1 = metrics.f1_score(y_test, test_pred)
+
+    print("Test Acc = ", testAcc)
+    print("Test F1 = ", testF1)
+
+    # f = open('UnwDataStats.txt', 'w')
+    # f.write("K-Value = %i\n" % 3)
+    # f.write("Best Unweighted Test Accuracy = %.3f\n" % testAcc)
+    # f.write("Best Unweighted Test F1 Score = %.3f" % testF1)
+    # f.close()
+
+    heatMap(model, 'Unweighted Maser Probability Heat Map', 'UnwHeatMapEntireDataSetTraining.pdf')
+
+    ############################## Build Wei KNN Model Testing Multiple Values of K ####################################
+    # Tests K values 1-30 inclusively on the chosen data set
+    # Uses stratified k-fold cross validation to ensure all items are used as both valdiation and training data
+    # Splits up into as many data points that there are, making the validation data only 1 point
+    f1List = []
+    maxF1 = 0
+    maxK = 0
+    for k in range(1, 31):
+        model = KNeighborsClassifier(n_neighbors=k, metric='euclidean', weights='distance')
+        # Uses 'Leave-One-Out' methodology; will split into as many sections as there is data
+        # Makes only one data point at a time the test data set
+        # Cannot do that; number of splits cannot be greater than the number of members in each class; stick to 5
+        f1 = cross_val_score(model, X_train, y_train, cv=5, scoring=make_scorer(f1_score), verbose=0)
+        # make_scorer(f1_score),
+        print("F1 List: ", f1)
+        f1 = mean(f1)
+        print("F1 Mean: ", f1)
+        print("K = ", k)
+        # Append F1 score to the f1List which keeps track of which K gets what F1 score
+        f1List.append(f1)
+
+        if maxF1 < f1:
+            maxF1 = f1
+            maxK = k
+
+    print("F1 List: ", f1List)
+    print('Max F1: ', maxF1, " | Max K: ", maxK)
+
+    ############ Apply the test data set to the model
+    model = KNeighborsClassifier(n_neighbors=3, metric='euclidean', weights='distance')
+    test_pred = model.fit(X_train, y_train).predict(X_test)
+    testAcc = metrics.accuracy_score(y_test, test_pred)
+    testF1 = metrics.f1_score(y_test, test_pred)
+
+    print("Test Acc = ", testAcc)
+    print("Test F1 = ", testF1)
+
+    # f = open('WeiDataStats.txt', 'w')
+    # f.write("K-Value = %i\n" % 3)
+    # f.write("Best Weighted Test Accuracy = %.3f\n" % testAcc)
+    # f.write("Best Weighted Test F1 Score = %.3f" % testF1)
+    # f.close()
+
+    heatMap(model, 'Weighted Maser Probability Heat Map', 'WeiHeatMapEntireDataSetTraining.pdf')
+
+    ###################################### Save the Data Sets for Future Use on Other Models ###########################
+
+    # np.save("EntireDataSetXTrain", X_train)
+    # np.save("EntireDataSetYTrain", y_train)
+    # np.save("EntireDataSetXTest", X_test)
+    # np.save("EntireDataSetYTest", y_test)
 
 if __name__ == '__main__':
     main()
