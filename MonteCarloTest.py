@@ -26,18 +26,20 @@ def plot(parentListMasers, parentListNonMasers, childListMasers, childListNonMas
     # Create an x-axis based on the mu and sigma values
     x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
 
-    # # Use Sturge's Rule to calculate correct number of bins based on data size of nonmaser dataset
-    # # Cast to int for a whole number
-    # # For this dataset, numBins = 10
-    # numBins = int(1 + 3.322 * math.log10(len(list2)))
-    #
-    # # Create a Histogram of nonMasers and Masers using their attributes
-    # # Plot over the gaussian curves too
-    # # Separate into 10 bins
-    # # Alpha of 0.5 for translucence
-    # plt.hist(list1, numBins, density=True, alpha=0.5, edgecolor='black', linewidth=1.5, label='NonMasers')
-    # plt.hist(list2, numBins, density=True, alpha=0.5, edgecolor='black', linewidth=1.5, label='Masers',
-    #          linestyle='dashed')
+    # Use Sturge's Rule to calculate correct number of bins based on data size of nonmaser dataset
+    # Cast to int for a whole number
+    # For this dataset, numBins = 10
+    numBinsChildMasers = int(1 + 3.322 * math.log10(len(childListMasers)))
+    numBinsChildNonMasers = int(1 + 3.322 * math.log10(len(childListNonMasers)))
+
+    # Create a Histogram of nonMasers and Masers using their attributes
+    # Plot over the gaussian curves too
+    # Separate into 10 bins
+    # Alpha of 0.5 for translucence
+    plt.hist(childListMasers, numBinsChildMasers, density=True, alpha=0.5, edgecolor='black', linewidth=1.5,
+             label='Masers')
+    # plt.hist(childListNonMasers, numBinsChildNonMasers, density=True, alpha=0.5, edgecolor='black', linewidth=1.5,
+    #          label='NonMasers', linestyle='dashed')
 
     # Plot the curve
     plt.plot(x, norm.pdf(x, mu, sigma), label=parentListMasersName, linestyle='dotted')
@@ -53,19 +55,19 @@ def plot(parentListMasers, parentListNonMasers, childListMasers, childListNonMas
     sigma = math.sqrt(variance)
 
     x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
-
-    # Plot the parent nonMaser L12 curve on top of the parent maser L12 curve
-    plt.plot(x, norm.pdf(x, mu, sigma), label=parentListNonMasersName, linestyle='dashdot')
-
-    # Plot a Univariate Gaussian curve for the child list masers on top of the parent curves
-    mu = np.mean(childListMasers)
-    variance = np.var(childListMasers)
-    sigma = math.sqrt(variance)
-
-    x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
-
-    # Plot the child maser L12 curve on top of the other curves
-    plt.plot(x, norm.pdf(x, mu, sigma), label=childListMasersName, linestyle='dashed')
+    #
+    # # Plot the parent nonMaser L12 curve on top of the parent maser L12 curve
+    # plt.plot(x, norm.pdf(x, mu, sigma), label=parentListNonMasersName, linestyle='dashdot')
+    #
+    # # Plot a Univariate Gaussian curve for the child list masers on top of the parent curves
+    # mu = np.mean(childListMasers)
+    # variance = np.var(childListMasers)
+    # sigma = math.sqrt(variance)
+    #
+    # x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
+    #
+    # # Plot the child maser L12 curve on top of the other curves
+    # plt.plot(x, norm.pdf(x, mu, sigma), label=childListMasersName, linestyle='dashed')
 
     # Plot a Univariate Gaussian curve for the child list nonMasers on top of the parent curves and child maser curve
     mu = np.mean(childListNonMasers)
