@@ -10,6 +10,7 @@ import math
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
+# Plot gaussian and histogram plots of the data sets
 # List 1 and 2 here should be the nonmaser and maser list pertaining to the same parameter (i.e. L12, Lx, etc.)
 # List1name should be masers___ where ___ is the parameter (i.e. nonmasersL12) Used for the label parameter of plot
 # xBalel should be string called 'Normalized ____', where ____ is the passed paramter (i.e. L12, Lx, etc.)

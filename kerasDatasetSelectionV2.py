@@ -11,6 +11,9 @@ from keras.utils import Sequence
 
 from playsound import playsound
 
+# This program removes a test set from the entire data set (20%) then creates a list of 1000 randomly undersampled
+# data sets. The model then trains over these 1000 train sets with a new train set after each epoch.
+
 def main():
 
     # My sequence class declaration

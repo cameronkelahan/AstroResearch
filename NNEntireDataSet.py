@@ -49,7 +49,7 @@ def heatMap(model, title, saveName):
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
     # Save as a PDF
-    plt.savefig(saveName, dpi=400, bbox_inches='tight', pad_inches=0.05)
+    # plt.savefig(saveName, dpi=400, bbox_inches='tight', pad_inches=0.05)
     plt.show()
     plt.clf()
     plt.close()
@@ -64,12 +64,12 @@ def main():
     y_test = np.load('./EntireDataSetTrainingTest/EntireDataSetYTest.npy')
 
     ################ Create the 3 and 4 layer NN models
-    # # 3-Layer Model
-    # model = Sequential()
-    # model.add(Dense(5, input_dim=2, activation='relu'))
-    # model.add(Dense(4, activation='relu'))
-    # model.add(Dense(1, activation='sigmoid'))
-    # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    # 3-Layer Model
+    model = Sequential()
+    model.add(Dense(5, input_dim=2, activation='relu'))
+    model.add(Dense(4, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
     # # 4-Layer Model
     # model = Sequential()
@@ -79,26 +79,26 @@ def main():
     # model.add(Dense(1, activation='sigmoid'))
     # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-    # 8-Layer Model
-    model = Sequential()
-    model.add(Dense(10, input_dim=2, activation='relu'))
-    model.add(Dense(9, activation='relu'))
-    model.add(Dense(8, activation='relu'))
-    model.add(Dense(7, activation='relu'))
-    model.add(Dense(6, activation='relu'))
-    model.add(Dense(4, activation='relu'))
-    model.add(Dense(2, activation='relu'))
-    model.add(Dense(1, activation='sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    # # 8-Layer Model
+    # model = Sequential()
+    # model.add(Dense(10, input_dim=2, activation='relu'))
+    # model.add(Dense(9, activation='relu'))
+    # model.add(Dense(8, activation='relu'))
+    # model.add(Dense(7, activation='relu'))
+    # model.add(Dense(6, activation='relu'))
+    # model.add(Dense(4, activation='relu'))
+    # model.add(Dense(2, activation='relu'))
+    # model.add(Dense(1, activation='sigmoid'))
+    # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-    # # 3Layer
-    # num_epochs = 400
+    # 3Layer
+    num_epochs = 400
 
     # # 4Layer
     # num_epochs = 500
 
-    # 8Layer
-    num_epochs = 500
+    # # 8Layer
+    # num_epochs = 500
 
     model.fit(X_train, y_train, epochs=num_epochs, batch_size=10, verbose=1)
     # validation_data=(np.array(X_val), y_val),
@@ -109,9 +109,9 @@ def main():
     print("Test Acc = ", testAcc)
     print("Test F1 = ", testF1)
 
-    # heatMap(model, '3-Layer NN Maser Probability Heat Map', '3LayerHeatMapEntireDataSetTraining.pdf')
+    heatMap(model, '3-Layer NN Maser Probability Heat Map', '3LayerHeatMapEntireDataSetTraining.pdf')
     # heatMap(model, '4-Layer NN Maser Probability Heat Map', '4LayerHeatMapEntireDataSetTraining.pdf')
-    heatMap(model, '8-Layer NN Maser Probability Heat Map', '8LayerHeatMapEntireDataSetTraining.pdf')
+    # heatMap(model, '8-Layer NN Maser Probability Heat Map', '8LayerHeatMapEntireDataSetTraining.pdf')
 
 if __name__ == '__main__':
     main()

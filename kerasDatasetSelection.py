@@ -18,6 +18,9 @@ from playsound import playsound
 import argparse
 
 
+# This program uses the old strategy of running through 1000 randomly subsampled data sets and picks the model which
+# performs best on its validation set
+
 # def parseArguments():
 #     parser = argparse.ArgumentParser(
 #         description='Build a Keras model for Image classification')

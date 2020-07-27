@@ -20,6 +20,7 @@ import time
 # from multiDataPreprocessing import processTestData
 import argparse
 
+# Build NN models based on the "best" dataset found by the UnwKNN model
 
 # def parseArguments():
 #     parser = argparse.ArgumentParser(

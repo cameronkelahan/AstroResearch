@@ -15,7 +15,7 @@ def normalizeValues(min, max, list):
 # List 1 and 2 here should be the nonmaser and maser list pertaining to the same parameter (i.e. L12, Lx, etc.)
 # List1name should be masers___ where ___ is the parameter (i.e. nonmasersL12) Used for the label parameter of plot
 # xBalel should be string called 'Normalized ____', where ____ is the passed paramter (i.e. L12, Lx, etc.)
-def plot(list1, list2, list1name, list2name, xLabel, saveName):
+def plot(list1, list2, list1name, list2name, xLabel, saveName, hist = False):
     ######################## Plot a Univariate Gaussian curve for 2 parameters
 
     # Calculate the Mu, variance, and sigma of parameter 1 nonmaser
@@ -31,12 +31,14 @@ def plot(list1, list2, list1name, list2name, xLabel, saveName):
     # For this dataset, numBins = 10
     numBins = int(1 + 3.322 * math.log10(len(list2)))
 
+
     # Create a Histogram of nonMasers and Masers using their attributes
     # Plot over the gaussian curves too
     # Separate into 10 bins
     # Alpha of 0.5 for translucence
-    plt.hist(list1, numBins, density=True, alpha=0.5, edgecolor='black', linewidth=1.5, label='NonMasers')
-    plt.hist(list2, numBins, density=True, alpha=0.5, edgecolor='black', linewidth=1.5, label='Masers',
+    if hist:
+        plt.hist(list1, numBins, density=True, alpha=0.5, edgecolor='black', linewidth=1.5, label='NonMasers')
+        plt.hist(list2, numBins, density=True, alpha=0.5, edgecolor='black', linewidth=1.5, label='Masers',
              linestyle='dashed')
 
     # Plot the curve
